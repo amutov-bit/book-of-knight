@@ -1,0 +1,285 @@
+freegames.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+empty_blur
+  rotate: false
+  xy: 1, 1
+  size: 298, 352
+  orig: 298, 352
+  offset: 0, 0
+  index: 1
+empty_blur
+  rotate: false
+  xy: 1, 1
+  size: 298, 352
+  orig: 298, 352
+  offset: 0, 0
+  index: 2
+empty_blur
+  rotate: false
+  xy: 1, 1
+  size: 298, 352
+  orig: 298, 352
+  offset: 0, 0
+  index: 3
+empty_blur
+  rotate: false
+  xy: 1, 1
+  size: 298, 352
+  orig: 298, 352
+  offset: 0, 0
+  index: 4
+golden_10_blur
+  rotate: false
+  xy: 1, 355
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_10_blur
+  rotate: false
+  xy: 1, 621
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_10_blur
+  rotate: false
+  xy: 1, 887
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_10_blur
+  rotate: false
+  xy: 1, 1153
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4
+golden_A_blur
+  rotate: false
+  xy: 1, 1419
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_A_blur
+  rotate: false
+  xy: 1, 1685
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_A_blur
+  rotate: false
+  xy: 281, 355
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_A_blur
+  rotate: false
+  xy: 301, 1
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4
+golden_axe_blur
+  rotate: false
+  xy: 281, 621
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_axe_blur
+  rotate: false
+  xy: 281, 887
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_axe_blur
+  rotate: false
+  xy: 281, 1153
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_axe_blur
+  rotate: false
+  xy: 281, 1419
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4
+golden_chalice_blur
+  rotate: false
+  xy: 281, 1685
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_chalice_blur
+  rotate: false
+  xy: 581, 1
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_chalice_blur
+  rotate: false
+  xy: 861, 1
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_chalice_blur
+  rotate: false
+  xy: 1141, 1
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4
+golden_J_blur
+  rotate: false
+  xy: 1421, 1
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_J_blur
+  rotate: false
+  xy: 1701, 1
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_J_blur
+  rotate: false
+  xy: 561, 267
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_J_blur
+  rotate: false
+  xy: 841, 267
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4
+golden_K_blur
+  rotate: false
+  xy: 1121, 267
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_K_blur
+  rotate: false
+  xy: 1401, 267
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_K_blur
+  rotate: false
+  xy: 1681, 267
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_K_blur
+  rotate: false
+  xy: 561, 533
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4
+golden_knight_blur
+  rotate: false
+  xy: 841, 533
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_knight_blur
+  rotate: false
+  xy: 1121, 533
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_knight_blur
+  rotate: false
+  xy: 1401, 533
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_knight_blur
+  rotate: false
+  xy: 1681, 533
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4
+golden_Q_blur
+  rotate: false
+  xy: 561, 799
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_Q_blur
+  rotate: false
+  xy: 561, 1065
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_Q_blur
+  rotate: false
+  xy: 561, 1331
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_Q_blur
+  rotate: false
+  xy: 561, 1597
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4
+golden_torch_blur
+  rotate: false
+  xy: 841, 799
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 1
+golden_torch_blur
+  rotate: false
+  xy: 1121, 799
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 2
+golden_torch_blur
+  rotate: false
+  xy: 1401, 799
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 3
+golden_torch_blur
+  rotate: false
+  xy: 1681, 799
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: 4

@@ -1,0 +1,37 @@
+{
+  "name": "es6-babel6",
+  "version": "1.0.0",
+  "description": "How to get started writing ES6 on the front end with babel 6+",
+  "main": "index.js",
+  "scripts": {
+    "predev:desktop": "node scripts/prepare-assets.mjs desktop",
+    "dev:desktop": "cross-env VARIANT=desktop VITE_VARIANT=desktop vite --mode development --host --port 3000",
+    "predev:mobile": "node scripts/prepare-assets.mjs mobile",
+    "dev:mobile": "cross-env VARIANT=mobile VITE_VARIANT=mobile vite --mode development --host --port 3001",
+    "prebuild:desktop": "node scripts/prepare-assets.mjs desktop",
+    "build:desktop": "cross-env VARIANT=desktop VITE_VARIANT=desktop vite build --mode production",
+    "prebuild:mobile": "node scripts/prepare-assets.mjs mobile",
+    "build:mobile": "cross-env VARIANT=mobile VITE_VARIANT=mobile vite build --mode production",
+    "mock:server": "node --watch scripts/mock-server.js",
+    "localization:build": "node scripts/convert-lang-xml.js",
+    "test:config": "tsx tests/assetsConfig.test.mjs",
+    "test:smoke": "tsx tests/lifecycle.smoke.test.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "es6",
+    "babel"
+  ],
+  "author": "Jean-Pierre Sierens",
+  "license": "ISC",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "pixi.js": "^8.9.2",
+    "ws": "^8.18.3",
+    "vite": "^6.3.5",
+    "typescript": "^5.9.2",
+    "@types/node": "^24.3.0",
+    "tsx": "^4.20.4"
+  },
+  "type": "module"
+}

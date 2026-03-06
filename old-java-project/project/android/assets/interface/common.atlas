@@ -1,0 +1,271 @@
+common.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+b_bg_active
+  rotate: false
+  xy: 1, 1083
+  size: 504, 800
+  orig: 504, 800
+  offset: 0, 0
+  index: -1
+b_bg_disable
+  rotate: false
+  xy: 507, 1083
+  size: 504, 800
+  orig: 504, 800
+  offset: 0, 0
+  index: -1
+b_no
+  rotate: false
+  xy: 727, 1885
+  size: 280, 100
+  orig: 280, 100
+  offset: 0, 0
+  index: 1
+b_no
+  rotate: false
+  xy: 1009, 1885
+  size: 280, 100
+  orig: 280, 100
+  offset: 0, 0
+  index: 2
+b_yes
+  rotate: false
+  xy: 1013, 1749
+  size: 280, 100
+  orig: 280, 100
+  offset: 0, 0
+  index: 1
+b_yes
+  rotate: false
+  xy: 1013, 1291
+  size: 280, 100
+  orig: 280, 100
+  offset: 0, 0
+  index: 2
+bbuy
+  rotate: false
+  xy: 1, 1885
+  size: 240, 140
+  orig: 240, 140
+  offset: 0, 0
+  index: 1
+bbuy
+  rotate: false
+  xy: 243, 1885
+  size: 240, 140
+  orig: 240, 140
+  offset: 0, 0
+  index: 2
+bbuy_deact
+  rotate: false
+  xy: 485, 1885
+  size: 240, 140
+  orig: 240, 140
+  offset: 0, 0
+  index: -1
+bigwin_digits0
+  rotate: false
+  xy: 1913, 1083
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits1
+  rotate: false
+  xy: 1913, 1283
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits2
+  rotate: false
+  xy: 1293, 1483
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits3
+  rotate: false
+  xy: 1013, 1083
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits4
+  rotate: false
+  xy: 1149, 1083
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits5
+  rotate: false
+  xy: 1295, 1683
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits6
+  rotate: false
+  xy: 1429, 1483
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits7
+  rotate: false
+  xy: 1431, 1683
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits8
+  rotate: false
+  xy: 1565, 1483
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits9
+  rotate: false
+  xy: 1701, 1291
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits_comma
+  rotate: false
+  xy: 1837, 1483
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+bigwin_digits_dot
+  rotate: false
+  xy: 1701, 1491
+  size: 134, 198
+  orig: 134, 198
+  offset: 0, 0
+  index: -1
+dot_acitve
+  rotate: false
+  xy: 1923, 541
+  size: 30, 30
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+dot_inactive
+  rotate: false
+  xy: 1955, 541
+  size: 30, 30
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+golden_frame
+  rotate: false
+  xy: 1013, 1483
+  size: 278, 264
+  orig: 278, 264
+  offset: 0, 0
+  index: -1
+openbook
+  rotate: false
+  xy: 1, 1
+  size: 1920, 1080
+  orig: 1920, 1080
+  offset: 0, 0
+  index: -1
+win_bg
+  rotate: false
+  xy: 1291, 1083
+  size: 620, 206
+  orig: 620, 206
+  offset: 0, 0
+  index: -1
+win_digits0
+  rotate: false
+  xy: 1923, 1
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits1
+  rotate: false
+  xy: 1985, 1
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits2
+  rotate: false
+  xy: 1923, 91
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits3
+  rotate: false
+  xy: 1985, 91
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits4
+  rotate: false
+  xy: 1923, 181
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits5
+  rotate: false
+  xy: 1985, 181
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits6
+  rotate: false
+  xy: 1923, 271
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits7
+  rotate: false
+  xy: 1985, 271
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits8
+  rotate: false
+  xy: 1923, 361
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits9
+  rotate: false
+  xy: 1985, 361
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits_comma
+  rotate: false
+  xy: 1923, 451
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1
+win_digits_dot
+  rotate: false
+  xy: 1985, 451
+  size: 60, 88
+  orig: 60, 88
+  offset: 0, 0
+  index: -1

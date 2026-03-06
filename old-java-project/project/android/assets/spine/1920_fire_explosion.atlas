@@ -1,0 +1,132 @@
+
+1920_fire_explosion.png
+size: 570,2064
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+f_01
+  rotate: false
+  xy: 2, 56
+  size: 66, 66
+  orig: 66, 66
+  offset: 0, 0
+  index: -1
+f_02
+  rotate: false
+  xy: 424, 2
+  size: 138, 175
+  orig: 138, 175
+  offset: 0, 0
+  index: -1
+f_03
+  rotate: false
+  xy: 276, 5
+  size: 146, 172
+  orig: 146, 172
+  offset: 0, 0
+  index: -1
+f_04
+  rotate: true
+  xy: 276, 179
+  size: 166, 179
+  orig: 166, 179
+  offset: 0, 0
+  index: -1
+f_05
+  rotate: true
+  xy: 331, 1431
+  size: 184, 195
+  orig: 184, 195
+  offset: 0, 0
+  index: -1
+f_06
+  rotate: true
+  xy: 339, 1617
+  size: 207, 215
+  orig: 207, 215
+  offset: 0, 0
+  index: -1
+f_07
+  rotate: false
+  xy: 339, 1826
+  size: 226, 236
+  orig: 226, 236
+  offset: 0, 0
+  index: -1
+f_08
+  rotate: true
+  xy: 321, 1188
+  size: 241, 247
+  orig: 241, 247
+  offset: 0, 0
+  index: -1
+f_09
+  rotate: false
+  xy: 319, 921
+  size: 249, 265
+  orig: 249, 265
+  offset: 0, 0
+  index: -1
+f_10
+  rotate: true
+  xy: 2, 124
+  size: 252, 272
+  orig: 252, 272
+  offset: 0, 0
+  index: -1
+f_11
+  rotate: false
+  xy: 311, 639
+  size: 257, 280
+  orig: 257, 280
+  offset: 0, 0
+  index: -1
+f_12
+  rotate: false
+  xy: 302, 347
+  size: 264, 290
+  orig: 264, 290
+  offset: 0, 0
+  index: -1
+f_13
+  rotate: true
+  xy: 2, 378
+  size: 270, 298
+  orig: 270, 298
+  offset: 0, 0
+  index: -1
+f_14
+  rotate: true
+  xy: 2, 650
+  size: 274, 307
+  orig: 274, 307
+  offset: 0, 0
+  index: -1
+f_15
+  rotate: true
+  xy: 2, 926
+  size: 280, 315
+  orig: 280, 315
+  offset: 0, 0
+  index: -1
+f_16
+  rotate: true
+  xy: 2, 1208
+  size: 280, 317
+  orig: 280, 317
+  offset: 0, 0
+  index: -1
+f_17
+  rotate: true
+  xy: 2, 1490
+  size: 286, 327
+  orig: 286, 327
+  offset: 0, 0
+  index: -1
+f_18
+  rotate: true
+  xy: 2, 1778
+  size: 284, 335
+  orig: 284, 335
+  offset: 0, 0
+  index: -1

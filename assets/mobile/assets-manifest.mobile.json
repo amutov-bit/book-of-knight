@@ -1,0 +1,245 @@
+{
+  "backgrounds": {
+    "landscape": {
+      "base": "assets/backgrounds/bg_landscape.jpg",
+      "fg": "assets/backgrounds/bg_landscape_fg.jpg",
+      "haw": "assets/backgrounds/bg_landscape_haw.jpg"
+    },
+    "portrait": {
+      "base": "assets/backgrounds/bg_portrait.jpg",
+      "fg": "assets/backgrounds/bg_portrait_fg.jpg",
+      "haw": "assets/backgrounds/bg_portrait_haw.jpg"
+    }
+  },
+  "reels": {
+    "background": {
+      "base": "assets/backgrounds/reels_bg.png",
+      "fg": "assets/backgrounds/reels_bg_fg.png",
+      "haw": "assets/backgrounds/reels_bg_haw.png"
+    },
+    "frame": {
+      "base": "assets/backgrounds/reels_frame.png",
+      "fg": "assets/backgrounds/reels_frame_fg.png"
+    }
+  },
+  "symbols": {
+    "atlases": [
+      "assets/symbols/symbols-0.json",
+      "assets/symbols/symbols-1.json"
+    ],
+    "frames": [
+      {
+        "prefix": "torch_blur_",
+        "atlas": "symbols-1.json"
+      },
+      {
+        "prefix": "mini_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "mega_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "major_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "A_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "K_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "Q_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "J_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "book_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "axe_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "chalice_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "shield_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "knight_blur_",
+        "atlas": "symbols-0.json"
+      }
+    ]
+  },
+  "gameplay": {
+    "timings": {
+      "spinTimeout": 11,
+      "showAllLinesTimeout": 35,
+      "spinEndTimeout": 0,
+      "noWinLastWinsTimeout": 16,
+      "autoTakeWinTimeout": 10,
+      "takeWinTimeout": 100,
+      "showLastWinsLoopDelay": 16,
+      "winToCreditStep": 200
+    }
+  },
+  "ui": {
+    "hud": {
+      "fonts": {
+        "primary": "Arial",
+        "jackpot": "Arial",
+        "creditLabel": "Arial",
+        "creditValue": "Arial",
+        "totalBetLabel": "Arial",
+        "totalBetValue": "Arial",
+        "status": "Arial",
+        "winStatus": "Arial",
+        "win": "Arial",
+        "jackpotValue": "Arial",
+        "jackpotLabel": "Arial"
+      },
+      "buyBonusMenu": {
+        "background": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "panels": {
+          "free": {
+            "x": 420,
+            "y": 190
+          },
+          "haw": {
+            "x": 989,
+            "y": 190
+          }
+        },
+        "symbols": {
+          "free": {
+            "x": 493,
+            "y": 605
+          },
+          "haw": {
+            "x": 1100,
+            "y": 590
+          }
+        },
+        "controls": {
+          "betBg": {
+            "x": 703,
+            "y": 86
+          },
+          "plus": {
+            "x": 1068,
+            "y": 78
+          },
+          "minus": {
+            "x": 709,
+            "y": 78
+          },
+          "close": {
+            "x": 1711,
+            "y": 829
+          },
+          "freeBuy": {
+            "x": 552,
+            "y": 285
+          },
+          "hawBuy": {
+            "x": 1121,
+            "y": 285
+          }
+        },
+        "texts": {
+          "title": {
+            "x": 960,
+            "y": 40,
+            "fontSize": 60
+          },
+          "totalBetLabel": {
+            "x": 956,
+            "y": 206,
+            "fontSize": 46
+          },
+          "totalBetValue": {
+            "x": 956,
+            "y": 139,
+            "fontSize": 46
+          },
+          "freeTitle": {
+            "x": 672,
+            "y": 560,
+            "fontSize": 54
+          },
+          "hawTitle": {
+            "x": 1241,
+            "y": 560,
+            "fontSize": 54
+          },
+          "freePrice": {
+            "x": 672,
+            "y": 465,
+            "fontSize": 54
+          },
+          "hawPrice": {
+            "x": 1241,
+            "y": 465,
+            "fontSize": 54
+          }
+        }
+      },
+      "buyBonusConfirm": {
+        "background": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        },
+        "panel": {
+          "x": 465,
+          "y": 240
+        },
+        "symbols": {
+          "free": {
+            "x": 782,
+            "y": 581
+          },
+          "haw": {
+            "x": 811,
+            "y": 566
+          }
+        },
+        "buttons": {
+          "yes": {
+            "x": 665,
+            "y": 331
+          },
+          "no": {
+            "x": 988,
+            "y": 331
+          }
+        },
+        "texts": {
+          "title": {
+            "x": 960,
+            "y": 345,
+            "fontSize": 54,
+            "wordWrapWidth": 930
+          }
+        }
+      }
+    }
+  }
+}

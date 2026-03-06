@@ -1,0 +1,378 @@
+import { GAME_RULES } from '../../config/gameRules';
+import { getGameplayConfig } from '../../config/gameplayConfig';
+
+function spinTimeout(): number {
+  return getGameplayConfig().spinTimeout || GAME_RULES.SPIN_TIMEOUT;
+}
+
+function showAllLinesTimeout(): number {
+  return getGameplayConfig().showAllLinesTimeout;
+}
+
+function spinEndTimeout(): number {
+  return getGameplayConfig().spinEndTimeout;
+}
+
+function noWinLastWinsTimeout(): number {
+  return getGameplayConfig().noWinLastWinsTimeout;
+}
+
+function autoTakeWinTimeout(): number {
+  return getGameplayConfig().autoTakeWinTimeout;
+}
+
+function takeWinTimeout(): number {
+  return getGameplayConfig().takeWinTimeout;
+}
+
+function showLastWinsLoopDelay(): number {
+  return getGameplayConfig().showLastWinsLoopDelay;
+}
+
+export const GameplayEvent = {
+  NONE: 0,
+  START: 1,
+  TAKEWIN: 2,
+  DOUBLEUP: 3,
+  MENU: 4,
+  AUTO: 5,
+  ENTER_STATS: 6
+} as const;
+
+export type GameplayEventValue = (typeof GameplayEvent)[keyof typeof GameplayEvent];
+
+type ControllerLike = {
+  game: any;
+  state: GameplayStateNode;
+  timerCounter: number;
+  idleTimerCounter: number;
+  lineCounter: number;
+  lastReelStopped: number;
+  highlightTimeout: number;
+  event: GameplayEventValue;
+  forceStopRequested: boolean;
+  reelsStoppedTimeout: number;
+  setNextState(nextState: GameplayStateNode): void;
+  startSpin(): boolean;
+  processWin(): void;
+  showWin(): void;
+  showAllWinningLines(): void;
+  clearAllLines(): void;
+  reelStopped(): boolean;
+  reelsStopped(): boolean;
+  beginWinToCredit(): boolean;
+  stepWinToCredit(): boolean;
+};
+
+type GameplayStateNode = {
+  title: string;
+  entry: (controller: ControllerLike) => void;
+  process: (controller: ControllerLike) => void;
+  leave: (controller: ControllerLike) => void;
+};
+
+const noop = () => undefined;
+
+function createState(
+  title: string,
+  handlers: {
+    entry?: (controller: ControllerLike) => void;
+    process?: (controller: ControllerLike) => void;
+    leave?: (controller: ControllerLike) => void;
+  }
+): GameplayStateNode {
+  return {
+    title,
+    entry: handlers.entry || noop,
+    process: handlers.process || noop,
+    leave: handlers.leave || noop
+  };
+}
+
+function clearEvent(controller: ControllerLike): void {
+  controller.event = GameplayEvent.NONE;
+}
+
+function hasWins(controller: ControllerLike): boolean {
+  return !!controller.game.context.outcome.hasWin;
+}
+
+function canAdvanceHighlights(controller: ControllerLike): boolean {
+  return controller.timerCounter > controller.highlightTimeout;
+}
+
+function outcomeWins(controller: ControllerLike): any[] {
+  return controller.game.context.outcome.wins;
+}
+
+function toState(controller: ControllerLike, nextState: GameplayStateNode): void {
+  controller.setNextState(nextState);
+}
+
+export const GameplayState = {} as Record<string, GameplayStateNode>;
+
+GameplayState.IDLE = createState('IDLE', {
+  entry: (controller) => {
+    if (controller.game.context.autoplay) {
+      if (controller.game.context.autoplayCounter > 0) {
+        controller.event = GameplayEvent.START;
+        controller.game.context.autoplayCounter--;
+      } else {
+        controller.game.context.autoplay = false;
+        controller.game.menu.enableControls();
+      }
+    } else {
+      controller.game.menu.enableControls();
+    }
+
+    controller.game.context.freeGamesCounter = 0;
+    controller.game.context.freeGamesWon = 0;
+    controller.game.menu.setWinStatus('');
+    if (controller.game.menu && typeof controller.game.menu.refreshIdleStatus === 'function') {
+      controller.game.menu.refreshIdleStatus();
+    }
+  },
+  process: (controller) => {
+    if (controller.game.menu && typeof controller.game.menu.refreshIdleStatus === 'function') {
+      controller.game.menu.refreshIdleStatus();
+    }
+
+    if (controller.event === GameplayEvent.START) {
+      clearEvent(controller);
+      return toState(controller, GameplayState.START_SPIN);
+    }
+
+    if (controller.idleTimerCounter < 1000) {
+      controller.idleTimerCounter++;
+    }
+  }
+});
+
+GameplayState.START_SPIN = createState('START_SPIN', {
+  process: (controller) => {
+    if (controller.startSpin()) {
+      return toState(controller, GameplayState.REELS_SPINNING);
+    }
+
+    toState(controller, GameplayState.IDLE);
+    controller.game.menu.setStatus('INSERT CREDITS');
+  }
+});
+
+GameplayState.REELS_SPINNING = createState('REELS_SPINNING', {
+  process: (controller) => {
+    if (!controller.game.gsLink.spinEnded) {
+      clearEvent(controller);
+      return;
+    }
+
+    if (controller.event === GameplayEvent.START) {
+      controller.forceStopRequested = true;
+      clearEvent(controller);
+      return toState(controller, GameplayState.REELS_STOPPED);
+    }
+
+    if (controller.timerCounter > spinTimeout()) {
+      toState(controller, GameplayState.REELS_STOPPING);
+    }
+  }
+});
+
+GameplayState.REELS_STOPPING = createState('REELS_STOPPING', {
+  entry: (controller) => {
+    controller.game.reels.stopReel(0);
+  },
+  process: (controller) => {
+    if (controller.event === GameplayEvent.START) {
+      controller.forceStopRequested = true;
+      clearEvent(controller);
+      return toState(controller, GameplayState.REELS_STOPPED);
+    }
+
+    if (controller.reelStopped()) {
+      const stoppedReel = controller.lastReelStopped;
+      if (stoppedReel >= 0) {
+        controller.game.reels.highlightScattersOnReel(stoppedReel, null);
+      }
+      const nextReel = stoppedReel + 1;
+      if (nextReel >= 0 && nextReel < controller.game.reels.NUMBER_OF_REELS) {
+        controller.game.reels.stopReel(nextReel);
+      }
+    }
+
+    if (controller.reelsStopped()) {
+      controller.reelsStoppedTimeout = 0;
+      toState(controller, GameplayState.REELS_STOPPED);
+    }
+  }
+});
+
+GameplayState.REELS_STOPPED = createState('REELS_STOPPED', {
+  entry: (controller) => {
+    controller.game.reels.stopAllReels(!!controller.forceStopRequested);
+    controller.forceStopRequested = false;
+  },
+  process: (controller) => {
+    if (controller.timerCounter < controller.reelsStoppedTimeout || !controller.game.reels.allStopped()) {
+      return;
+    }
+
+    if (!hasWins(controller)) {
+      return toState(controller, GameplayState.SPIN_END);
+    }
+
+    if (controller.event === GameplayEvent.START) {
+      clearEvent(controller);
+      return toState(controller, GameplayState.SHOW_ALL_WINNING_LINES);
+    }
+
+    toState(controller, GameplayState.SHOW_WINS);
+  }
+});
+
+GameplayState.SHOW_WINS = createState('SHOW_WINS', {
+  entry: (controller) => {
+    controller.lineCounter = 0;
+    controller.game.context.onscreenWinMeter = 0;
+    controller.game.menu.setWin(0);
+    controller.game.menu.setStatus('');
+    controller.game.menu.setWinStatus('');
+    controller.processWin();
+    controller.lineCounter++;
+  },
+  process: (controller) => {
+    if (controller.event === GameplayEvent.START) {
+      if (hasWins(controller)) {
+        clearEvent(controller);
+        return toState(controller, GameplayState.SHOW_ALL_WINNING_LINES);
+      }
+      return toState(controller, GameplayState.SPIN_END);
+    }
+
+    if (controller.event === GameplayEvent.TAKEWIN) {
+      clearEvent(controller);
+      return toState(controller, GameplayState.WIN_TO_CREDIT);
+    }
+
+    if (!canAdvanceHighlights(controller)) {
+      return;
+    }
+
+    controller.timerCounter = 0;
+    if (controller.lineCounter < outcomeWins(controller).length) {
+      controller.processWin();
+      controller.lineCounter++;
+      return;
+    }
+
+    toState(controller, GameplayState.WIN_TO_CREDIT);
+  },
+  leave: (controller) => {
+    controller.game.reels.unhighlightAll();
+  }
+});
+
+GameplayState.SHOW_ALL_WINNING_LINES = createState('SHOW_ALL_WINNING_LINES', {
+  entry: (controller) => {
+    controller.showAllWinningLines();
+    controller.game.menu.updateMeters();
+  },
+  process: (controller) => {
+    if (controller.timerCounter > showAllLinesTimeout()) {
+      controller.clearAllLines();
+      toState(controller, GameplayState.WIN_TO_CREDIT);
+    }
+  }
+});
+
+GameplayState.SHOW_LAST_WINS = createState('SHOW_LAST_WINS', {
+  entry: (controller) => {
+    controller.lineCounter = 0;
+    controller.game.menu.enableControls();
+  },
+  process: (controller) => {
+    if (controller.event === GameplayEvent.START) {
+      return toState(controller, GameplayState.IDLE);
+    }
+
+    if (outcomeWins(controller).length === 0) {
+      if (controller.timerCounter > noWinLastWinsTimeout()) {
+        return toState(controller, GameplayState.IDLE);
+      }
+      return;
+    }
+
+    if (!canAdvanceHighlights(controller)) {
+      return;
+    }
+
+    controller.timerCounter = 0;
+    if (controller.lineCounter < outcomeWins(controller).length) {
+      controller.showWin();
+      controller.lineCounter++;
+      return;
+    }
+
+    controller.lineCounter = 0;
+    controller.timerCounter = -showLastWinsLoopDelay();
+    controller.game.reels.unhighlightAll();
+  },
+  leave: (controller) => {
+    controller.game.reels.unhighlightAll();
+  }
+});
+
+GameplayState.TAKE_WINS = createState('TAKE_WINS', {
+  process: (controller) => {
+    if (controller.event === GameplayEvent.START) {
+      return toState(controller, GameplayState.WIN_TO_CREDIT);
+    }
+
+    if (controller.game.context.autoplay && controller.timerCounter > autoTakeWinTimeout()) {
+      return toState(controller, GameplayState.WIN_TO_CREDIT);
+    }
+
+    if (controller.timerCounter > takeWinTimeout()) {
+      toState(controller, GameplayState.WIN_TO_CREDIT);
+    }
+  },
+  leave: (controller) => {
+    clearEvent(controller);
+  }
+});
+
+GameplayState.WIN_TO_CREDIT = createState('WIN_TO_CREDIT', {
+  entry: (controller) => {
+    if (!controller.beginWinToCredit()) {
+      toState(controller, GameplayState.SPIN_END);
+    }
+  },
+  process: (controller) => {
+    if (controller.event === GameplayEvent.START || controller.event === GameplayEvent.TAKEWIN) {
+      clearEvent(controller);
+      return toState(controller, GameplayState.SPIN_END);
+    }
+
+    if (!controller.stepWinToCredit()) {
+      return;
+    }
+
+    toState(controller, GameplayState.SPIN_END);
+  }
+});
+
+GameplayState.SPIN_END = createState('SPIN_END', {
+  entry: (controller) => {
+    controller.game.menu.updateMeters();
+  },
+  process: (controller) => {
+    if (controller.timerCounter <= spinEndTimeout()) {
+      return;
+    }
+
+    controller.game.reels.unhighlightAll();
+    toState(controller, GameplayState.SHOW_LAST_WINS);
+  }
+});
+
+GameplayState.TEMPLATE = createState('TEMPLATE', {});

@@ -1,0 +1,178 @@
+{
+  "backgrounds": {
+    "base": "assets/backgrounds/bg.jpg",
+    "fg": "assets/backgrounds/bg_fg.jpg",
+    "haw": "assets/backgrounds/bg_haw.jpg",
+    "landscape": {
+      "base": "assets/backgrounds/bg.jpg",
+      "fg": "assets/backgrounds/bg_fg.jpg",
+      "haw": "assets/backgrounds/bg_haw.jpg"
+    },
+    "portrait": {
+      "base": "assets/backgrounds/bg.jpg",
+      "fg": "assets/backgrounds/bg_fg.jpg",
+      "haw": "assets/backgrounds/bg_haw.jpg"
+    }
+  },
+  "reels": {
+    "background": {
+      "base": "assets/backgrounds/reels_bg.png",
+      "fg": "assets/backgrounds/reels_bg_fg.png",
+      "haw": "assets/backgrounds/reels_bg_haw.png"
+    },
+    "frame": {
+      "base": "assets/backgrounds/reels_frame.png",
+      "fg": "assets/backgrounds/reels_frame_fg_haw.png",
+      "haw": "assets/backgrounds/reels_frame_fg_haw.png"
+    }
+  },
+  "layout": {
+    "shared": {
+      "baseReel": {
+        "spinStep": 43,
+        "pitch": 272,
+        "symbolWidth": 278,
+        "symbolHeight": 264,
+        "trimTopY": 0,
+        "trimBottomY": 0
+      },
+      "reels": {
+        "strip": [
+          1,
+          5,
+          6,
+          4,
+          5
+        ],
+        "forceSymbolIndex": null
+      },
+      "layers": {
+        "reelsBgX": 0,
+        "reelsBgY": 0,
+        "titleX": 0,
+        "titleY": 0
+      }
+    },
+    "mobileLandscape": {
+      "reels": {
+        "spacing": 162,
+        "x": 105,
+        "y": 65,
+        "width": 162,
+        "height": 440
+      }
+    },
+    "mobilePortrait": {
+      "reels": {
+        "spacing": 162,
+        "x": 105,
+        "y": 65,
+        "width": 162,
+        "height": 440
+      }
+    }
+  },
+  "symbols": {
+    "atlases": [
+      "assets/symbols/symbols-0.json",
+      "assets/symbols/symbols-1.json"
+    ],
+    "frames": [
+      {
+        "prefix": "torch_blur_",
+        "atlas": "symbols-1.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "mini_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "mega_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "major_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "A_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "K_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "Q_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "J_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "book_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "axe_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "chalice_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "shield_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "prefix": "knight_blur_",
+        "atlas": "symbols-0.json",
+        "offsetX": 0,
+        "offsetY": 0
+      }
+    ]
+  },
+  "ui": {
+    "hud": {
+      "fonts": {
+        "primary": "Arial",
+        "jackpot": "Arial",
+        "creditLabel": "Arial",
+        "creditValue": "Arial",
+        "totalBetLabel": "Arial",
+        "totalBetValue": "Arial",
+        "status": "Arial",
+        "winStatus": "Arial",
+        "win": "Arial",
+        "jackpotValue": "Arial",
+        "jackpotLabel": "Arial"
+      }
+    }
+  }
+}

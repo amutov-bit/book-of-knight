@@ -1,0 +1,9 @@
+export const GAME_RULES = Object.freeze({
+    REELS: 5,
+    SYMBOLS: 3,
+    CLICKS_TO_STOP: 5,
+    SPIN_TIMEOUT: 11,
+    REEL_STOP_INTERVAL: 11,
+    REEL_EXTENDED_STOP_INTERVAL: 111,
+    BUY_BONUS_BUTTON_ENABLED: true
+});

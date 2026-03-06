@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Of Knight Hold And Win</title>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; background: #000; }
+    canvas { display: block; margin: 0 auto; }
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      z-index: 2000;
+    }
+    #parent {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(90vw, 1600px);
+      height: min(90vh, 900px);
+      display: none;
+      z-index: 2001;
+    }
+    #iframeHistory,
+    #iframeLobby {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="overlay"></div>
+  <div id="parent">
+    <iframe id="iframeHistory"></iframe>
+    <iframe id="iframeLobby"></iframe>
+  </div>
+  <script type="module" src="/src/app.ts"></script>
+  <script>
+    function closeEmbeddedFrames() {
+      const overlay = document.getElementById('overlay');
+      const parent = document.getElementById('parent');
+      const iframeHistory = document.getElementById('iframeHistory');
+      const iframeLobby = document.getElementById('iframeLobby');
+      if (overlay) overlay.style.display = 'none';
+      if (parent) parent.style.display = 'none';
+      if (iframeHistory) iframeHistory.style.display = 'none';
+      if (iframeLobby) iframeLobby.style.display = 'none';
+    }
+
+    const overlay = document.getElementById('overlay');
+    if (overlay) {
+      overlay.addEventListener('click', closeEmbeddedFrames);
+    }
+
+    window.addEventListener('message', (event) => {
+      if (event && event.data === 'closeIframe') {
+        closeEmbeddedFrames();
+      }
+    });
+  </script>
+</body>
+</html>

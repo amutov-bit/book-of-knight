@@ -1,0 +1,81 @@
+lines.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+line
+  rotate: false
+  xy: 1, 1169
+  size: 1225, 693
+  orig: 1920, 1080
+  offset: 344, 205
+  index: 4
+line
+  rotate: false
+  xy: 1, 729
+  size: 1228, 438
+  orig: 1920, 1080
+  offset: 346, 191
+  index: 6
+line
+  rotate: false
+  xy: 1, 1
+  size: 1258, 726
+  orig: 1920, 1080
+  offset: 334, 189
+  index: 8
+line
+  rotate: true
+  xy: 1261, 1
+  size: 1258, 726
+  orig: 1920, 1080
+  offset: 338, 189
+  index: 9
+
+lines-1.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+line
+  rotate: false
+  xy: 1, 1
+  size: 1318, 182
+  orig: 1920, 1080
+  offset: 293, 466
+  index: 1
+line
+  rotate: false
+  xy: 1, 1
+  size: 1318, 182
+  orig: 1920, 1080
+  offset: 293, 739
+  index: 2
+line
+  rotate: false
+  xy: 1, 1
+  size: 1318, 182
+  orig: 1920, 1080
+  offset: 293, 186
+  index: 3
+line
+  rotate: true
+  xy: 1321, 1
+  size: 1225, 693
+  orig: 1920, 1080
+  offset: 344, 210
+  index: 5
+line
+  rotate: false
+  xy: 1, 185
+  size: 1228, 438
+  orig: 1920, 1080
+  offset: 346, 483
+  index: 7
+line
+  rotate: false
+  xy: 1, 625
+  size: 1223, 691
+  orig: 1920, 1080
+  offset: 346, 207
+  index: 10

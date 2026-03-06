@@ -1,0 +1,102 @@
+{
+  "backgrounds": {
+    "landscape": {
+      "base": "assets/backgrounds/bg_landscape.jpg",
+      "fg": "assets/backgrounds/bg_landscape_fg.jpg",
+      "haw": "assets/backgrounds/bg_landscape_haw.jpg"
+    },
+    "portrait": {
+      "base": "assets/backgrounds/bg_portrait.jpg",
+      "fg": "assets/backgrounds/bg_portrait_fg.jpg",
+      "haw": "assets/backgrounds/bg_portrait_haw.jpg"
+    }
+  },
+  "reels": {
+    "background": {
+      "base": "assets/backgrounds/reels_bg.png",
+      "fg": "assets/backgrounds/reels_bg_fg.png",
+      "haw": "assets/backgrounds/reels_bg_haw.png"
+    },
+    "frame": {
+      "base": "assets/backgrounds/reels_frame.png",
+      "fg": "assets/backgrounds/reels_frame_fg.png"
+    }
+  },
+  "symbols": {
+    "atlases": [
+      "assets/symbols/symbols-0.json",
+      "assets/symbols/symbols-1.json"
+    ],
+    "frames": [
+      {
+        "prefix": "torch_blur_",
+        "atlas": "symbols-1.json"
+      },
+      {
+        "prefix": "mini_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "mega_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "major_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "A_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "K_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "Q_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "J_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "book_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "axe_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "chalice_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "shield_blur_",
+        "atlas": "symbols-0.json"
+      },
+      {
+        "prefix": "knight_blur_",
+        "atlas": "symbols-0.json"
+      }
+    ]
+  },
+  "ui": {
+    "hud": {
+      "fonts": {
+        "primary": "Arial",
+        "jackpot": "Arial",
+        "creditLabel": "Arial",
+        "creditValue": "Arial",
+        "totalBetLabel": "Arial",
+        "totalBetValue": "Arial",
+        "status": "Arial",
+        "winStatus": "Arial",
+        "win": "Arial",
+        "jackpotValue": "Arial",
+        "jackpotLabel": "Arial"
+      }
+    }
+  }
+}

@@ -1,0 +1,176 @@
+
+highlights.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+highlights
+  rotate: false
+  xy: 1, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 1
+highlights
+  rotate: false
+  xy: 1, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 2
+highlights
+  rotate: false
+  xy: 195, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 3
+highlights
+  rotate: false
+  xy: 195, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 4
+highlights
+  rotate: false
+  xy: 389, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 5
+highlights
+  rotate: false
+  xy: 389, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 6
+highlights
+  rotate: false
+  xy: 583, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 7
+highlights
+  rotate: false
+  xy: 583, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 8
+highlights
+  rotate: false
+  xy: 777, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 9
+highlights
+  rotate: false
+  xy: 777, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 10
+
+highlights2.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+highlights
+  rotate: false
+  xy: 1, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 11
+highlights
+  rotate: false
+  xy: 1, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 12
+highlights
+  rotate: false
+  xy: 195, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 13
+highlights
+  rotate: false
+  xy: 195, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 14
+highlights
+  rotate: false
+  xy: 389, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 15
+highlights
+  rotate: false
+  xy: 389, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 16
+highlights
+  rotate: false
+  xy: 583, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 17
+highlights
+  rotate: false
+  xy: 583, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 18
+highlights
+  rotate: false
+  xy: 777, 483
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 19
+highlights
+  rotate: false
+  xy: 777, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 20
+
+highlights3.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+highlights
+  rotate: false
+  xy: 1, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 21
+highlights
+  rotate: false
+  xy: 195, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 22
+highlights
+  rotate: false
+  xy: 389, 1
+  size: 192, 480
+  orig: 192, 480
+  offset: 0, 0
+  index: 23

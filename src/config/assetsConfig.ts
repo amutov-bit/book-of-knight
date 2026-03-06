@@ -1,0 +1,712 @@
+import { getRuntimeVariant } from './runtimeConfig';
+import { GAME_RULES } from './gameRules';
+import { STRIPS_CONFIG } from './stripsConfig';
+import { SYMBOL_INDEX_PREFIX_ORDER } from './symbolConfig';
+
+/**
+ * Manifest readers used during boot and by UI/layout modules at runtime.
+ *
+ * This module centralizes fallback behavior so downstream code can consume a
+ * stable manifest shape after validation.
+ */
+let cachedManifest = undefined;
+let cachedManifestErrors = [];
+const BASE_REEL_KEYS = [
+    'spinStep',
+    'pitch',
+    'symbolWidth',
+    'symbolHeight',
+    'trimTopY',
+    'trimBottomY'
+];
+
+async function fetchJsonIfExists(path) {
+    try {
+        const response = await fetch(path, { cache: 'no-cache' });
+        if (!response.ok) return null;
+        return await response.json();
+    } catch (error) {
+        return null;
+    }
+}
+
+function getModeValue(map, mode) {
+    if (!map) return null;
+    if (mode === 'fg') return map.fg || null;
+    if (mode === 'haw') return map.haw || null;
+    return map.base || null;
+}
+
+function isObject(value) {
+    return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function mergeBranch(base, override) {
+    const result = {};
+    const baseObj = isObject(base) ? base : {};
+    const overrideObj = isObject(override) ? override : {};
+    const keys = [...new Set([...Object.keys(baseObj), ...Object.keys(overrideObj)])];
+
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const baseValue = baseObj[key];
+        const overrideValue = overrideObj[key];
+        if (isObject(baseValue) || isObject(overrideValue)) {
+            result[key] = { ...(isObject(baseValue) ? baseValue : {}), ...(isObject(overrideValue) ? overrideValue : {}) };
+        } else if (overrideValue !== undefined) {
+            result[key] = overrideValue;
+        } else {
+            result[key] = baseValue;
+        }
+    }
+
+    return result;
+}
+
+function getLayoutBranch(manifest, variant, isLandscape) {
+    if (!manifest || !isObject(manifest.layout)) return null;
+    const layout = manifest.layout;
+    const shared = isObject(layout.shared) ? layout.shared : {};
+
+    let specific = layout.desktop;
+    if (variant === 'mobile') {
+        specific = isLandscape ? layout.mobileLandscape : layout.mobilePortrait;
+    }
+
+    return mergeBranch(shared, specific);
+}
+
+function validateLayoutBranch(branchName, branch, errors) {
+    if (!isObject(branch)) {
+        errors.push(`manifest.layout.${branchName} must be an object.`);
+        return;
+    }
+
+    if (!isObject(branch.baseReel)) {
+        errors.push(`manifest.layout.${branchName}.baseReel is required.`);
+    } else {
+        for (let i = 0; i < BASE_REEL_KEYS.length; i++) {
+            const key = BASE_REEL_KEYS[i];
+            if (!Number.isFinite(branch.baseReel[key])) {
+                errors.push(`manifest.layout.${branchName}.baseReel.${key} must be a number.`);
+            }
+        }
+    }
+
+    if (branch.reels != null && !isObject(branch.reels)) {
+        errors.push(`manifest.layout.${branchName}.reels must be an object.`);
+    } else if (isObject(branch.reels) && branch.reels.forceSymbolIndex != null && !Number.isFinite(branch.reels.forceSymbolIndex)) {
+        errors.push(`manifest.layout.${branchName}.reels.forceSymbolIndex must be a number when provided.`);
+    }
+    if (branch.layers != null && !isObject(branch.layers)) {
+        errors.push(`manifest.layout.${branchName}.layers must be an object.`);
+    }
+}
+
+function isNumericArray(value) {
+    return Array.isArray(value) && value.length > 0 && value.every((item) => Number.isFinite(item));
+}
+
+/**
+ * Loads the variant-specific manifest and falls back to the opposite variant when missing.
+ */
+export async function loadAssetsManifest(variant = getRuntimeVariant()) {
+    if (cachedManifest !== undefined) {
+        return cachedManifest;
+    }
+
+    const fallbackVariant = variant === 'mobile' ? 'desktop' : 'mobile';
+    const lookup = [
+        `assets/assets-manifest.${variant}.json`,
+        `assets/assets-manifest.${fallbackVariant}.json`
+    ];
+
+    for (let i = 0; i < lookup.length; i++) {
+        const manifest = await fetchJsonIfExists(lookup[i]);
+        if (manifest) {
+            cachedManifest = manifest;
+            cachedManifestErrors = validateAssetsManifest(cachedManifest, variant);
+            return cachedManifest;
+        }
+    }
+
+    cachedManifest = null;
+    cachedManifestErrors = ['Missing assets manifest. Expected one of: ' + lookup.join(', ')];
+    return cachedManifest;
+}
+
+/**
+ * Returns validation errors captured during the latest manifest load.
+ */
+export function getManifestValidationErrors() {
+    return cachedManifestErrors.slice();
+}
+
+/**
+ * Performs lightweight structural checks before runtime systems consume the manifest.
+ */
+export function validateAssetsManifest(manifest, variant = getRuntimeVariant()) {
+    const errors = [];
+    if (!manifest || typeof manifest !== 'object') {
+        errors.push('Manifest must be a JSON object.');
+        return errors;
+    }
+
+    if (!manifest.backgrounds || typeof manifest.backgrounds !== 'object') {
+        errors.push('manifest.backgrounds is required.');
+    } else if (variant === 'mobile') {
+        if (!manifest.backgrounds.landscape || !manifest.backgrounds.portrait) {
+            errors.push('mobile manifest requires backgrounds.landscape and backgrounds.portrait.');
+        }
+    } else if (variant === 'desktop') {
+        if (!manifest.backgrounds.base) {
+            errors.push('desktop manifest requires backgrounds.base.');
+        }
+    }
+
+    if (manifest.reels != null && typeof manifest.reels !== 'object') {
+        errors.push('manifest.reels must be an object.');
+    }
+
+    if (manifest.symbols != null) {
+        if (typeof manifest.symbols !== 'object') {
+            errors.push('manifest.symbols must be an object.');
+        } else {
+            if (manifest.symbols.atlases != null && !Array.isArray(manifest.symbols.atlases)) {
+                errors.push('manifest.symbols.atlases must be an array.');
+            }
+            if (manifest.symbols.frames != null && !Array.isArray(manifest.symbols.frames)) {
+                errors.push('manifest.symbols.frames must be an array.');
+            } else if (Array.isArray(manifest.symbols.frames)) {
+                for (let i = 0; i < manifest.symbols.frames.length; i++) {
+                    const entry = manifest.symbols.frames[i];
+                    if (!entry || typeof entry !== 'object') continue;
+                    if (entry.offsetX != null && !Number.isFinite(entry.offsetX)) {
+                        errors.push(`manifest.symbols.frames[${i}].offsetX must be a number when provided.`);
+                    }
+                    if (entry.offsetY != null && !Number.isFinite(entry.offsetY)) {
+                        errors.push(`manifest.symbols.frames[${i}].offsetY must be a number when provided.`);
+                    }
+                }
+            }
+        }
+    }
+
+    if (manifest.ui != null) {
+        if (typeof manifest.ui !== 'object') {
+            errors.push('manifest.ui must be an object.');
+        } else if (manifest.ui.atlases != null && !Array.isArray(manifest.ui.atlases)) {
+            errors.push('manifest.ui.atlases must be an array.');
+        } else if (manifest.ui.hud != null && !isObject(manifest.ui.hud)) {
+            errors.push('manifest.ui.hud must be an object when provided.');
+        }
+    }
+
+    if (manifest.layout != null && !isObject(manifest.layout)) {
+        errors.push('manifest.layout must be an object.');
+    } else if (isObject(manifest.layout)) {
+        if (manifest.layout.shared != null && !isObject(manifest.layout.shared)) {
+            errors.push('manifest.layout.shared must be an object.');
+        }
+        if (variant === 'mobile') {
+            validateLayoutBranch('mobileLandscape', getLayoutBranch(manifest, 'mobile', true), errors);
+            validateLayoutBranch('mobilePortrait', getLayoutBranch(manifest, 'mobile', false), errors);
+        } else {
+            validateLayoutBranch('desktop', getLayoutBranch(manifest, 'desktop', true), errors);
+        }
+    }
+
+    return errors;
+}
+
+/**
+ * Produces the deduplicated asset URL list needed by the loading screen.
+ */
+export function getLoadingManifest(manifest) {
+    if (!manifest) return [];
+
+    const entries = [];
+    const bg = manifest.backgrounds || {};
+    const bgPaths = [
+        bg.base, bg.fg, bg.haw,
+        bg.landscape && bg.landscape.base,
+        bg.landscape && bg.landscape.fg,
+        bg.landscape && bg.landscape.haw,
+        bg.portrait && bg.portrait.base,
+        bg.portrait && bg.portrait.fg,
+        bg.portrait && bg.portrait.haw
+    ].filter((value) => typeof value === 'string');
+    entries.push(...bgPaths);
+    entries.push(...getReelLayerKeys(manifest));
+
+    const atlases = Array.isArray(manifest.symbols && manifest.symbols.atlases)
+        ? manifest.symbols.atlases.filter((value) => typeof value === 'string')
+        : [];
+    entries.push(...atlases);
+    entries.push(...getUiAtlases(manifest));
+
+    return [...new Set(entries)];
+}
+
+/**
+ * Returns UI atlas paths declared by the manifest.
+ */
+export function getUiAtlases(manifest) {
+    if (!manifest || !manifest.ui || !Array.isArray(manifest.ui.atlases)) {
+        return [];
+    }
+    return manifest.ui.atlases.filter((value) => typeof value === 'string');
+}
+
+/**
+ * Returns HUD/menu visual config with a built-in fallback for partial manifests.
+ */
+export function getUiHudConfig(manifest) {
+    const fallback = {
+        fonts: {
+            primary: 'Arial',
+            jackpot: 'Arial',
+            creditLabel: 'Arial',
+            creditValue: 'Arial',
+            totalBetLabel: 'Arial',
+            totalBetValue: 'Arial',
+            status: 'Arial',
+            winStatus: 'Arial',
+            win: 'Arial',
+            jackpotValue: 'Arial',
+            jackpotLabel: 'Arial'
+        },
+        backgrounds: {
+            bottom: { frame: 'bottom_bg.png', x: 0, y: 1034 },
+            winField: { frame: 'win_field.png', x: 0, y: 942 }
+        },
+        buttons: {
+            start: { base: 'button_start', x: 1616, y: 368, width: 300, height: 300, enableFadeFrames: 12, enableFadeFromAlpha: 0.55 },
+            stop: { base: 'button_stop', x: 1616, y: 368, width: 300, height: 300, enableFadeFrames: 12, enableFadeFromAlpha: 0.55 },
+            auto: { base: 'button_autoplay', x: 1728, y: 88, width: 162, height: 162, enableFadeFrames: 10, enableFadeFromAlpha: 0.55 },
+            autoStop: { base: 'button_autoX', x: 1728, y: 88, width: 162, height: 162, enableFadeFrames: 10, enableFadeFromAlpha: 0.55, counter: { x: 82, y: 78, fontSize: 54, minFontSize: 26, maxWidth: 118, color: 0xffffff, fontWeight: '700', align: 'center' } },
+            bet: { base: 'button_bet', x: 1728, y: 820, width: 162, height: 162, enableFadeFrames: 10, enableFadeFromAlpha: 0.55 },
+            settings: { base: 'button_settings', x: 30, y: 820, width: 162, height: 162, enableFadeFrames: 10, enableFadeFromAlpha: 0.55 },
+            buyBonus: { base: 'bb_yellow', x: 0, y: 430, width: 194, height: 164, enableFadeFrames: 10, enableFadeFromAlpha: 0.55 },
+            home: { base: 'button_home', x: 83, y: 1030, width: 50, height: 50, enableFadeFrames: 8, enableFadeFromAlpha: 0.55 }
+        },
+        texts: {
+            credit: { x: 220, y: 1039, fontSize: 34, align: 'left', anchorX: 0, labelColor: 0xffc600, valueColor: 0xf3f9f9 },
+            totalBet: { x: 1490, y: 1039, fontSize: 34, align: 'left', anchorX: 0, labelColor: 0xffc600, valueColor: 0xf3f9f9 },
+            status: { x: 960, y: 969, fontSize: 36, align: 'center', anchorX: 0.5 },
+            winStatus: { x: 960, y: 990, fontSize: 34, align: 'center', anchorX: 0.5 },
+            win: { x: 960, y: 953, fontSize: 36, align: 'center', anchorX: 0.5 }
+        },
+        topBar: {
+            logo: { frame: 'logo.png', x: 20, y: 6 },
+            jackpots: [
+                {
+                    frame: 'jackpot_gold_act.png',
+                    x: 248,
+                    y: 6,
+                    valueX: 488,
+                    valueY: 18,
+                    valueText: '100.00',
+                    labelX: 488,
+                    labelY: 73,
+                    labelText: '',
+                    valueFontSize: 56,
+                    labelFontSize: 22,
+                    valueColor: 0xffcc00,
+                    labelColor: 0xffcc00
+                },
+                {
+                    frame: 'jackpot_silver_act.png',
+                    x: 736,
+                    y: 6,
+                    valueX: 976,
+                    valueY: 18,
+                    valueText: '10.00',
+                    labelX: 976,
+                    labelY: 73,
+                    labelText: '',
+                    valueFontSize: 56,
+                    labelFontSize: 22,
+                    valueColor: 0xbadcff,
+                    labelColor: 0xbadcff
+                },
+                {
+                    frame: 'jackpot_bronze_act.png',
+                    x: 1224,
+                    y: 6,
+                    valueX: 1464,
+                    valueY: 18,
+                    valueText: '2.00',
+                    labelX: 1464,
+                    labelY: 73,
+                    labelText: '',
+                    valueFontSize: 56,
+                    labelFontSize: 22,
+                    valueColor: 0xfc87af,
+                    labelColor: 0xfc87af
+                }
+            ]
+        },
+        betMenu: {
+            panel: { frame: 'bg_bet.png', x: 846, y: 86 },
+            valueField: { frame: 'bet_value.png', x: 1036, y: 536 },
+            title: { x: 1293, y: 120, fontSize: 60, color: 0x93a7bf },
+            totalBetLabel: { x: 1293, y: 641, fontSize: 46, color: 0xbee1f5 },
+            valueText: { x: 1289, y: 566, fontSize: 46, color: 0xbee1f5 },
+            lines: { x: 1293, y: 166, fontSize: 36, color: 0xbee1f5 },
+            buttons: {
+                max: { frame: 'button_maxbet_001.png', pressed: 'button_maxbet_002.png', x: 1136, y: 740, fontSize: 42, color: 0xbee1f5 },
+                plus: { frame: 'plus_001.png', pressed: 'plus_002.png', x: 1401, y: 528 },
+                minus: { frame: 'minus_001.png', pressed: 'minus_002.png', x: 1042, y: 528 },
+                close: { frame: 'button_closesmall_001.png', pressed: 'button_closesmall_002.png', x: 1505, y: 815 },
+                preset: {
+                    frame: 'button_digit_001.png',
+                    pressed: 'button_digit_002.png',
+                    fontSize: 42,
+                    color: 0xbee1f5,
+                    positions: [
+                        { x: 937, y: 364 },
+                        { x: 1182, y: 364 },
+                        { x: 1427, y: 364 },
+                        { x: 937, y: 220 },
+                        { x: 1182, y: 220 },
+                        { x: 1427, y: 220 }
+                    ]
+                }
+            }
+        },
+        autoPlayMenu: {
+            overlay: { color: 0x000000, alpha: 0.55 },
+            panel: { frame: 'bg_auto.png', x: 853, y: 6 },
+            title: { x: 1300, y: 96, fontSize: 60, color: 0x93a7bf },
+            autoSpinsLabel: { x: 1300, y: 500, fontSize: 54, color: 0x93a7bf },
+            infoText: { x: 1296, y: 312, fontSize: 36, color: 0xb9c5d3 },
+            buttons: {
+                close: { frame: 'button_closesmall_001.png', pressed: 'button_closesmall_002.png', x: 1512, y: 59 },
+                start: { frame: 'start_autospins_001.png', pressed: 'start_autospins_002.png', x: 901, y: 835, fontSize: 60, color: 0xbee1f5, maxTextWidth: 760, minFontSize: 26, textOffsetY: 0 },
+                spin: {
+                    frame: 'button_digit_001.png',
+                    pressed: 'button_digit_002.png',
+                    fontSize: 60,
+                    color: 0xbee1f5,
+                    values: [10, 20, 50, 100, 1000],
+                    positions: [
+                        { x: 963, y: 427 },
+                        { x: 1190, y: 427 },
+                        { x: 1417, y: 427 },
+                        { x: 1070, y: 554 },
+                        { x: 1297, y: 554 }
+                    ]
+                },
+                turbo: { frame: 'turbo_bg_001.png', pressed: 'turbo_bg_002.png', x: 1043, y: 212, fontSize: 36, color: 0xb9c5d3, textAlign: 'left', textX: 80, textY: 53, textOffsetY: 0 },
+                skip: { frame: 'skipscreen_bg_001.png', pressed: 'skipscreen_bg_002.png', x: 1043, y: 371, fontSize: 36, color: 0xb9c5d3, textAlign: 'left', textX: 80, textY: 53, textOffsetY: 0 }
+            }
+        },
+        buyBonusMenu: {
+            background: { x: 0, y: 0, width: 1920, height: 1080 },
+            panels: {
+                free: { x: 420, y: 190 },
+                haw: { x: 989, y: 190 }
+            },
+            symbols: {
+                free: { x: 493, y: 605 },
+                haw: { x: 1100, y: 590 }
+            },
+            controls: {
+                betBg: { x: 703, y: 86 },
+                plus: { x: 1068, y: 78 },
+                minus: { x: 709, y: 78 },
+                close: { x: 1711, y: 829 },
+                freeBuy: { x: 552, y: 285 },
+                hawBuy: { x: 1121, y: 285 }
+            },
+            texts: {
+                title: { x: 960, y: 40, fontSize: 60 },
+                totalBetLabel: { x: 956, y: 206, fontSize: 46 },
+                totalBetValue: { x: 956, y: 139, fontSize: 46 },
+                freeTitle: { x: 672, y: 560, fontSize: 54 },
+                hawTitle: { x: 1241, y: 560, fontSize: 54 },
+                freePrice: { x: 672, y: 465, fontSize: 54 },
+                hawPrice: { x: 1241, y: 465, fontSize: 54 }
+            }
+        },
+        buyBonusConfirm: {
+            background: { x: 0, y: 0, width: 1920, height: 1080 },
+            panel: { x: 465, y: 240 },
+            symbols: {
+                free: { x: 782, y: 581 },
+                haw: { x: 811, y: 566 }
+            },
+            buttons: {
+                yes: { x: 665, y: 331 },
+                no: { x: 988, y: 331 }
+            },
+            texts: {
+                title: { x: 960, y: 345, fontSize: 54, wordWrapWidth: 930 }
+            }
+        }
+    }; 
+
+    if (!manifest || !isObject(manifest.ui) || !isObject(manifest.ui.hud)) {
+        return fallback;
+    }
+
+    const hud = manifest.ui.hud;
+    return {
+        fonts: mergeBranch(fallback.fonts, hud.fonts),
+        backgrounds: mergeBranch(fallback.backgrounds, hud.backgrounds),
+        buttons: mergeBranch(fallback.buttons, hud.buttons),
+        texts: mergeBranch(fallback.texts, hud.texts),
+        topBar: mergeBranch(fallback.topBar, hud.topBar),
+        betMenu: mergeBranch(fallback.betMenu, hud.betMenu),
+        autoPlayMenu: mergeBranch(fallback.autoPlayMenu, hud.autoPlayMenu),
+        buyBonusMenu: mergeBranch(fallback.buyBonusMenu, hud.buyBonusMenu),
+        buyBonusConfirm: mergeBranch(fallback.buyBonusConfirm, hud.buyBonusConfirm)
+    };
+}
+
+export function getBackgroundKeys(manifest) {
+    if (!manifest) return [];
+    const bg = manifest.backgrounds || {};
+    return [
+        bg.base, bg.fg, bg.haw,
+        bg.landscape && bg.landscape.base,
+        bg.landscape && bg.landscape.fg,
+        bg.landscape && bg.landscape.haw,
+        bg.portrait && bg.portrait.base,
+        bg.portrait && bg.portrait.fg,
+        bg.portrait && bg.portrait.haw
+    ].filter((value) => typeof value === 'string');
+}
+
+export function getBackgroundTextureKey(manifest, variant, mode, isLandscape) {
+    if (!manifest || !manifest.backgrounds) {
+        return null;
+    }
+
+    const bg = manifest.backgrounds;
+
+    if (variant === 'mobile') {
+        const mobileMap = isLandscape ? bg.landscape : bg.portrait;
+        return getModeValue(mobileMap, mode) || getModeValue(bg, mode);
+    }
+
+    return getModeValue(bg, mode);
+}
+
+export function getReelLayerKeys(manifest) {
+    if (!manifest || !manifest.reels) return [];
+    const reels = manifest.reels;
+    const keys = [
+        reels.background && reels.background.base,
+        reels.background && reels.background.fg,
+        reels.background && reels.background.haw,
+        reels.frame && reels.frame.base,
+        reels.frame && reels.frame.fg,
+        reels.frame && reels.frame.haw
+    ].filter((value) => typeof value === 'string');
+    return [...new Set(keys)];
+}
+
+export function getReelTextureKey(manifest, layer, mode) {
+    if (!manifest || !manifest.reels || !manifest.reels[layer]) {
+        return null;
+    }
+    return getModeValue(manifest.reels[layer], mode);
+}
+
+export function getSymbolAtlases(manifest) {
+    if (!manifest || !manifest.symbols || !Array.isArray(manifest.symbols.atlases)) {
+        return [];
+    }
+    return manifest.symbols.atlases.filter((value) => typeof value === 'string');
+}
+
+export function getSymbolFrameDefs(manifest) {
+    if (!manifest || !manifest.symbols || !Array.isArray(manifest.symbols.frames)) {
+        return [];
+    }
+
+    return manifest.symbols.frames
+        .filter((entry) => entry && typeof entry.prefix === 'string' && typeof entry.atlas === 'string')
+        .map((entry) => ({
+            prefix: entry.prefix,
+            atlas: entry.atlas,
+            offsetX: Number.isFinite(entry.offsetX) ? entry.offsetX : 0,
+            offsetY: Number.isFinite(entry.offsetY) ? entry.offsetY : 0
+        }));
+}
+
+function normalizePrefix(prefix) {
+    if (typeof prefix !== 'string') return '';
+    return prefix.endsWith('_') ? prefix.slice(0, -1) : prefix;
+}
+
+export function getSymbolFrameDefsByIndex(manifest) {
+    const defs = getSymbolFrameDefs(manifest);
+    const defsByPrefix = new Map();
+    for (let i = 0; i < defs.length; i++) {
+        defsByPrefix.set(normalizePrefix(defs[i].prefix), defs[i]);
+    }
+
+    return SYMBOL_INDEX_PREFIX_ORDER.map((prefix) => {
+        const key = normalizePrefix(prefix);
+        const found = defsByPrefix.get(key);
+        if (found) return found;
+        return { prefix, atlas: '', offsetX: 0, offsetY: 0 };
+    });
+}
+
+export function getReelsLayoutConfig(manifest, variant, isLandscape) {
+    const fallback = {
+        reels: {
+            count: GAME_RULES.REELS,
+            spacing: 162,
+            x: 105,
+            y: 65,
+            width: 162,
+            height: 440,
+            strip: [1, 5, 6, 4, 5],
+            forceSymbolIndex: null
+        },
+        layers: {
+            reelsBgX: 0,
+            reelsBgY: 0,
+            titleX: 0,
+            titleY: 0
+        },
+        betMenu: {
+            panel: { frame: 'bg_bet.png', x: 846, y: 86 },
+            valueField: { frame: 'bet_value.png', x: 1036, y: 536 },
+            title: { x: 1293, y: 120, fontSize: 60, color: 0x93a7bf },
+            totalBetLabel: { x: 1293, y: 641, fontSize: 46, color: 0xbee1f5 },
+            valueText: { x: 1289, y: 566, fontSize: 46, color: 0xbee1f5 },
+            lines: { x: 1293, y: 166, fontSize: 36, color: 0xbee1f5 },
+            buttons: {
+                max: { frame: 'button_maxbet_001.png', pressed: 'button_maxbet_002.png', x: 1136, y: 740, fontSize: 42, color: 0xbee1f5 },
+                plus: { frame: 'plus_001.png', pressed: 'plus_002.png', x: 1401, y: 528 },
+                minus: { frame: 'minus_001.png', pressed: 'minus_002.png', x: 1042, y: 528 },
+                close: { frame: 'button_closesmall_001.png', pressed: 'button_closesmall_002.png', x: 1505, y: 815 },
+                preset: {
+                    frame: 'button_digit_001.png',
+                    pressed: 'button_digit_002.png',
+                    fontSize: 42,
+                    color: 0xbee1f5,
+                    positions: [
+                        { x: 937, y: 364 },
+                        { x: 1182, y: 364 },
+                        { x: 1427, y: 364 },
+                        { x: 937, y: 220 },
+                        { x: 1182, y: 220 },
+                        { x: 1427, y: 220 }
+                    ]
+                }
+            }
+        }
+    }; 
+
+    if (!manifest || !isObject(manifest.layout)) return fallback;
+    const branch = getLayoutBranch(manifest, variant, isLandscape);
+
+    if (!isObject(branch)) return fallback;
+
+    const branchValue = branch as any;
+    const reels = isObject(branchValue.reels) ? branchValue.reels : {};
+    const layers = isObject(branchValue.layers) ? branchValue.layers : {};
+
+    return {
+        reels: {
+            count: GAME_RULES.REELS,
+            spacing: Number.isFinite(reels.spacing) ? reels.spacing : fallback.reels.spacing,
+            x: Number.isFinite(reels.x) ? reels.x : fallback.reels.x,
+            y: Number.isFinite(reels.y) ? reels.y : fallback.reels.y,
+            width: Number.isFinite(reels.width) ? reels.width : fallback.reels.width,
+            height: Number.isFinite(reels.height) ? reels.height : fallback.reels.height,
+            strip: Array.isArray(reels.strip) && reels.strip.length > 0 ? reels.strip : fallback.reels.strip,
+            forceSymbolIndex: Number.isFinite(reels.forceSymbolIndex) ? reels.forceSymbolIndex : fallback.reels.forceSymbolIndex
+        },
+        layers: {
+            reelsBgX: Number.isFinite(layers.reelsBgX) ? layers.reelsBgX : fallback.layers.reelsBgX,
+            reelsBgY: Number.isFinite(layers.reelsBgY) ? layers.reelsBgY : fallback.layers.reelsBgY,
+            titleX: Number.isFinite(layers.titleX) ? layers.titleX : fallback.layers.titleX,
+            titleY: Number.isFinite(layers.titleY) ? layers.titleY : fallback.layers.titleY
+        },
+        betMenu: {
+            panel: { frame: 'bg_bet.png', x: 846, y: 86 },
+            valueField: { frame: 'bet_value.png', x: 1036, y: 536 },
+            title: { x: 1293, y: 120, fontSize: 60, color: 0x93a7bf },
+            totalBetLabel: { x: 1293, y: 641, fontSize: 46, color: 0xbee1f5 },
+            valueText: { x: 1289, y: 566, fontSize: 46, color: 0xbee1f5 },
+            lines: { x: 1293, y: 166, fontSize: 36, color: 0xbee1f5 },
+            buttons: {
+                max: { frame: 'button_maxbet_001.png', pressed: 'button_maxbet_002.png', x: 1136, y: 740, fontSize: 42, color: 0xbee1f5 },
+                plus: { frame: 'plus_001.png', pressed: 'plus_002.png', x: 1401, y: 528 },
+                minus: { frame: 'minus_001.png', pressed: 'minus_002.png', x: 1042, y: 528 },
+                close: { frame: 'button_closesmall_001.png', pressed: 'button_closesmall_002.png', x: 1505, y: 815 },
+                preset: {
+                    frame: 'button_digit_001.png',
+                    pressed: 'button_digit_002.png',
+                    fontSize: 42,
+                    color: 0xbee1f5,
+                    positions: [
+                        { x: 937, y: 364 },
+                        { x: 1182, y: 364 },
+                        { x: 1427, y: 364 },
+                        { x: 937, y: 220 },
+                        { x: 1182, y: 220 },
+                        { x: 1427, y: 220 }
+                    ]
+                }
+            }
+        }
+    }; 
+}
+
+function normalizeStripSet(stripSet, reelsCount, fallbackStrip) {
+    if (!Array.isArray(stripSet) || stripSet.length === 0) {
+        return new Array(reelsCount).fill(0).map(() => [...fallbackStrip]);
+    }
+
+    const normalized = [];
+    for (let i = 0; i < reelsCount; i++) {
+        const reelStrip = stripSet[i];
+        if (isNumericArray(reelStrip)) {
+            normalized.push([...reelStrip]);
+        } else {
+            normalized.push([...fallbackStrip]);
+        }
+    }
+    return normalized;
+}
+
+function resolveStripSetByMode(math, mode) {
+    if (!math || !isObject(math)) return null;
+    if (mode === 'free') return math.stripsFreeGames || math.stripsNormalGames || null;
+    if (mode === 'holdAndWin') return math.stripsHoldAndWin || math.stripsNormalGames || null;
+    return math.stripsNormalGames || null;
+}
+
+export function getReelStripsConfig(manifest, variant, isLandscape, mode = 'normal') {
+    const layout = getReelsLayoutConfig(manifest, variant, isLandscape);
+    const reelsCount = layout.reels.count;
+    const fallbackStrip = Array.isArray(layout.reels.strip) && layout.reels.strip.length > 0
+        ? layout.reels.strip
+        : [1, 5, 6, 4, 5];
+
+    const stripSet = resolveStripSetByMode(STRIPS_CONFIG, mode) || resolveStripSetByMode(manifest && manifest.math, mode);
+    return normalizeStripSet(stripSet, reelsCount, fallbackStrip);
+}
+
+export function getDefaultStripMode(manifest) {
+    const mode = STRIPS_CONFIG.activeStripSet as string;
+    if (mode === 'free' || mode === 'holdAndWin') return mode;
+    return 'normal';
+}
+
+
+
+
+
+
+
+

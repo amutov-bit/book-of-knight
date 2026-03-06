@@ -1,0 +1,6 @@
+node_modules
+dist/
+build/
+public/assets/
+
+old-java-project/project/html/boost-hot-desktop.zip
