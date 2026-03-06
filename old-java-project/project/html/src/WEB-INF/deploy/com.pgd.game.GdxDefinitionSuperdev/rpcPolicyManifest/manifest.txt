@@ -1,2 +1,0 @@
-# Module com.pgd.game.GdxDefinitionSuperdev
-# RPC service class, partial path of RPC policy file

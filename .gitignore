@@ -2,5 +2,8 @@ node_modules
 dist/
 build/
 public/assets/
+.idea/
+old-java-project/
+*:Zone.Identifier
 
 old-java-project/project/html/boost-hot-desktop.zip
